@@ -119,7 +119,7 @@ class Hextasy::Hexagony
         # skip
       when '$' ; ip.tick!
         # get byte
-      when ',' ; memset (io.read_byte || -1).to_i64
+      when ',' ; memset (STDIN.read_byte || -1).to_i64
         # get integer
       when '?' ; memset getnum.to_i64
         # put byte
