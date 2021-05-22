@@ -91,7 +91,7 @@ class Hextasy::Hexagony
       when '!' ; io << memget
       when '(' ; memset memget - 1
       when ')' ; memset memget + 1
-      when '~' ; memset memget * -1
+      when '~' ; memset -memget
       when '+' ; binop :+
       when '-' ; binop :-
       when '*' ; binop :*
