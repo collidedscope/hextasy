@@ -49,11 +49,16 @@ class Hextasy::Hexagony
     memory[memory_pointer.edge] = {{value}}
   end
 
+  macro left
+    memory[memory_pointer.dup.tap(&.turn_left!).edge]
+  end
+
+  macro right
+    memory[memory_pointer.dup.tap(&.turn_right!).edge]
+  end
+
   macro neighbors
-    {
-      memory[memory_pointer.dup.tap(&.turn_left!).edge],
-      memory[memory_pointer.dup.tap(&.turn_right!).edge]
-    }
+    {left, right}
   end
 
   macro checked_binop(left, op, right)
@@ -65,7 +70,6 @@ class Hextasy::Hexagony
   end
 
   macro binop(op)
-    left, right = neighbors
     memset checked_binop left, {{op}}, right
   end
 
@@ -95,6 +99,7 @@ class Hextasy::Hexagony
       when '+' ; binop :+
       when '-' ; binop :-
       when '*' ; binop :*
+      when ':' ; memset left // right
       when '=' ; memory_pointer.reverse!
       when '{' ; memory_pointer.turn_left!
       when '}' ; memory_pointer.turn_right!
@@ -103,9 +108,6 @@ class Hextasy::Hexagony
       when '[' ; @active_ip = @active_ip.pred % 6
       when ']' ; @active_ip = @active_ip.succ % 6
       when '#' ; @active_ip = memget.to_i % 6
-      when ':'
-        left, right = neighbors
-        memset left // right
       when '%'
         left, right = neighbors
         mod = case {left, right}
