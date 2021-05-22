@@ -32,29 +32,13 @@ class Hextasy::MemoryPointer
   end
 
   def turn_left!
-    # @right += Axpoint::Heading.from_value @direction.value.succ % 6
-    case direction
-    when .north?    ; @right = @left.northeast
-    when .northwest?; @right = @left.northwest
-    when .southwest?; @right = @left.west
-    when .south?    ; @right = @left.southwest
-    when .southeast?; @right = @left.southeast
-    when .northeast?; @right = @left.east
-    end
+    @right = left + Axpoint::Heading.from_value direction.value.succ % 6
     @direction = @direction.anticlockwise
     self
   end
 
   def turn_right!
-    # @left += Axpoint::Heading.from_value @direction.value
-    case direction
-    when .north?    ; @left = @right.northwest
-    when .northeast?; @left = @right.northeast
-    when .southeast?; @left = @right.east
-    when .south?    ; @left = @right.southeast
-    when .southwest?; @left = @right.southwest
-    when .northwest?; @left = @right.west
-    end
+    @left = right + Axpoint::Heading.from_value direction.value
     @direction = @direction.clockwise
     self
   end
