@@ -95,36 +95,53 @@ class Hextasy::Hexagony
 
     loop do
       case insn = @program[ip.cell]
-      when '.' # do nothing
+        # no-op
+      when '.'
+        # halt
       when '@' ; break
+        # mirrors
       when '/' ; ip.heading = ip.heading.slash
       when '\\'; ip.heading = ip.heading.backslash
-      when '<' ; ip.heading = ip.heading.lt memget
-      when '>' ; ip.heading = ip.heading.gt memget
       when '_' ; ip.heading = ip.heading.underscore
       when '|' ; ip.heading = ip.heading.pipe
+        # reflect or branch
+      when '<' ; ip.heading = ip.heading.lt memget
+      when '>' ; ip.heading = ip.heading.gt memget
+        # skip
       when '$' ; ip.tick!
+        # get byte
       when ',' ; memset (io.read_byte || -1).to_i64
-      when ';' ; io.write_byte (memget & 0xFF).to_u8
-      when '!' ; io << memget
+        # get integer
       when '?' ; memset getnum.to_i64
+        # put byte
+      when ';' ; io.write_byte (memget & 0xFF).to_u8
+        # put integer
+      when '!' ; io << memget
+        # decrement
       when '(' ; memset memget - 1
+        # increment
       when ')' ; memset memget + 1
+        # negate
       when '~' ; memset -memget
+        # add/sub/mul/div
       when '+' ; binop :+
       when '-' ; binop :-
       when '*' ; binop :*
       when ':' ; memset left // right
+        # memory pointer navigation
       when '=' ; memory_pointer.reverse!
       when '{' ; memory_pointer.turn_left!
       when '}' ; memory_pointer.turn_right!
       when '\''; memory_pointer.reverse!.turn_left!.reverse!
       when '"' ; memory_pointer.reverse!.turn_right!.reverse!
       when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
+        # copy
       when '&' ; memset memget > 0 ? right : left
+        # active instruction pointer
       when '[' ; @active_ip = @active_ip.pred % 6
       when ']' ; @active_ip = @active_ip.succ % 6
       when '#' ; @active_ip = memget.to_i % 6
+        # modulus
       when '%'
         left, right = neighbors
         mod = case {left, right}
@@ -134,8 +151,10 @@ class Hextasy::Hexagony
                 left.to_big_i % right
               end
         memset mod
+        # alphabetic literals
       when 'A'..'Z', 'a'..'z'
         memset insn.ord.to_i64
+        # numeric literals
       when '0'..'9'
         val = insn - '0'
         mag = checked_binop memget, :*, 10
