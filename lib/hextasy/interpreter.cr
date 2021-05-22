@@ -120,6 +120,8 @@ class Hextasy::Hexagony
       when '}' ; memory_pointer.turn_right!
       when '\''; memory_pointer.reverse!.turn_left!.reverse!
       when '"' ; memory_pointer.reverse!.turn_right!.reverse!
+      when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
+      when '&' ; memset memget > 0 ? right : left
       when '[' ; @active_ip = @active_ip.pred % 6
       when ']' ; @active_ip = @active_ip.succ % 6
       when '#' ; @active_ip = memget.to_i % 6
