@@ -11,10 +11,12 @@ class Hextasy::Hexagony
 
   @active_ip = 0
   @program = {} of Axpoint => Char
+  @debug = Set(Axpoint).new
 
   def initialize(source)
+    flags = source.count '`'
     insns = source.delete(" \f\n\r\t\v").chars
-    @size = Util.hex_size insns.size
+    @size = Util.hex_size insns.size - flags
     @corners = Axpoint::HEADINGS.map { |heading, vector|
       Axpoint.new *vector.map &.*(@size - 1)
     }
@@ -31,8 +33,14 @@ class Hextasy::Hexagony
     row_lengths = Util.rows @size
 
     row_starts.each_with_index do |cell, i|
-      row_lengths[i].times do |offset|
-        @program[cell.east offset] = insns.shift? || '.'
+      row_lengths[i].times do
+        if (insn = insns.shift?) == '`'
+          @debug << cell
+          insn = insns.shift?
+        end
+
+        @program[cell] = insn || '.'
+        cell = cell.east
       end
     end
   end
@@ -88,6 +96,7 @@ class Hextasy::Hexagony
   end
 
   def interpret(io = STDOUT)
+    clock = 0
     @instruction_pointers = StaticArray(InstructionPointer, 6).new { |i|
       heading = Axpoint::Heading.from_value (i + 2) % 6
       InstructionPointer.new corners[i], heading, self
@@ -164,6 +173,11 @@ class Hextasy::Hexagony
         abort "'#{insn}' not yet implemented!"
       end
 
+      if @debug.includes? ip.cell
+        STDERR.puts "\nTick #{clock}: '#{insn}'", memory
+      end
+
+      clock += 1
       ip.tick!
     end
   end
