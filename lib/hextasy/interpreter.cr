@@ -13,7 +13,7 @@ class Hextasy::Hexagony
   @program = {} of Axpoint => Char
 
   def initialize(source)
-    insns = source.delete(" \t\n").chars
+    insns = source.delete(" \f\n\r\t\v").chars
     @size = Util.hex_size insns.size
     @corners = Axpoint::HEADINGS.map { |heading, vector|
       Axpoint.new *vector.map &.*(@size - 1)
