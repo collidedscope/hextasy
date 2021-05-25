@@ -11,6 +11,7 @@ class Hextasy::Hexagony
 
   @active_ip = 0
   @program = {} of Axpoint => Char
+  @row_col = {} of Axpoint => Tuple(Int32, Int32)
   @debug = Set(Axpoint).new
 
   def initialize(source)
@@ -33,13 +34,15 @@ class Hextasy::Hexagony
     row_lengths = Util.rows @size
 
     row_starts.each_with_index do |cell, i|
-      row_lengths[i].times do
+      offset = (i - @size + 1).abs
+      row_lengths[i].times do |j|
         if (insn = insns.shift?) == '`'
           @debug << cell
           insn = insns.shift?
         end
 
         @program[cell] = insn || '.'
+        @row_col[cell] = {i, j * 2 + offset}
         cell = cell.east
       end
     end
