@@ -106,72 +106,11 @@ class Hextasy::Hexagony
 
   def interpret(input = STDIN, output = STDOUT)
     clock = 0
+    insn = '.'
     reset
 
     loop do
-      case insn = @program[ip.cell]
-        # no-op
-      when '.'
-        # halt
-      when '@' ; break
-        # mirrors
-      when '/' ; ip.heading = ip.heading.slash
-      when '\\'; ip.heading = ip.heading.backslash
-      when '_' ; ip.heading = ip.heading.underscore
-      when '|' ; ip.heading = ip.heading.pipe
-        # reflect or branch
-      when '<' ; ip.heading = ip.heading.lt memget
-      when '>' ; ip.heading = ip.heading.gt memget
-        # skip
-      when '$' ; ip.tick!
-        # get byte
-      when ',' ; memset (input.read_byte || -1).to_i64
-        # get integer
-      when '?' ; memset getnum.to_i64
-        # put byte
-      when ';' ; output.write_byte (memget & 0xFF).to_u8
-        # put integer
-      when '!' ; output << memget
-        # decrement
-      when '(' ; memset memget - 1
-        # increment
-      when ')' ; memset memget + 1
-        # negate
-      when '~' ; memset -memget
-        # add/sub/mul/div
-      when '+' ; binop :+
-      when '-' ; binop :-
-      when '*' ; binop :*
-      when ':' ; memset left // right
-        # memory pointer navigation
-      when '=' ; memory_pointer.reverse!
-      when '{' ; memory_pointer.turn_left!
-      when '}' ; memory_pointer.turn_right!
-      when '\''; memory_pointer.reverse!.turn_left!.reverse!
-      when '"' ; memory_pointer.reverse!.turn_right!.reverse!
-      when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
-        # copy
-      when '&' ; memset memget > 0 ? right : left
-        # modulus
-      when '%'
-        left, right = neighbors
-        mod = case {left, right}
-              when {Int64, Int64}
-                left % right
-              else
-                left.to_big_i % right
-              end
-        memset mod
-        # alphabetic literals
-      when 'A'..'Z', 'a'..'z'
-        memset insn.ord.to_i64
-        # numeric literals
-      when '0'..'9'
-        val = insn - '0'
-        mag = checked_binop memget, :*, 10
-        val *= -1 if mag < 0
-        memset checked_binop mag, :+, val
-      end
+      step
 
       if @debug.includes? ip.cell
         STDERR.puts "\nTick #{clock}: '#{insn}'", memory
@@ -186,6 +125,72 @@ class Hextasy::Hexagony
                    when '#' ; memget.to_i % 6
                    else       @active_ip
                    end
+    end
+  end
+
+  macro step
+    case insn = @program[ip.cell]
+      # no-op
+    when '.'
+      # halt
+    when '@' ; break
+      # mirrors
+    when '/' ; ip.heading = ip.heading.slash
+    when '\\'; ip.heading = ip.heading.backslash
+    when '_' ; ip.heading = ip.heading.underscore
+    when '|' ; ip.heading = ip.heading.pipe
+      # reflect or branch
+    when '<' ; ip.heading = ip.heading.lt memget
+    when '>' ; ip.heading = ip.heading.gt memget
+      # skip
+    when '$' ; ip.tick!
+      # get byte
+    when ',' ; memset (input.read_byte || -1).to_i64
+      # get integer
+    when '?' ; memset getnum.to_i64
+      # put byte
+    when ';' ; output.write_byte (memget & 0xFF).to_u8
+      # put integer
+    when '!' ; output << memget
+      # decrement
+    when '(' ; memset memget - 1
+      # increment
+    when ')' ; memset memget + 1
+      # negate
+    when '~' ; memset -memget
+      # add/sub/mul/div
+    when '+' ; binop :+
+    when '-' ; binop :-
+    when '*' ; binop :*
+    when ':' ; memset left // right
+      # memory pointer navigation
+    when '=' ; memory_pointer.reverse!
+    when '{' ; memory_pointer.turn_left!
+    when '}' ; memory_pointer.turn_right!
+    when 39  ; memory_pointer.reverse!.turn_left!.reverse! # '\'' breaks macro parsing
+    when '"' ; memory_pointer.reverse!.turn_right!.reverse!
+    when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
+      # copy
+    when '&' ; memset memget > 0 ? right : left
+      # modulus
+    when '%'
+      left, right = neighbors
+      mod = case {left, right}
+            when {Int64, Int64}
+              left % right
+            else
+              left.to_big_i % right
+            end
+      memset mod
+      # alphabetic literals
+    when 'A'..'Z', 'a'..'z'
+      memset insn.ord.to_i64
+      # numeric literals
+    when '0'..'9'
+      val = insn - '0'
+      mag = checked_binop memget, :*, 10
+      val *= -1 if mag < 0
+      memset checked_binop mag, :+, val
     end
   end
 end
