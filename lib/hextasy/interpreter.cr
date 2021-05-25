@@ -182,15 +182,17 @@ class Hextasy::Hexagony
               left.to_big_i % right
             end
       memset mod
-      # alphabetic literals
-    when 'A'..'Z', 'a'..'z'
-      memset insn.ord.to_i64
       # numeric literals
     when '0'..'9'
       val = insn - '0'
       mag = checked_binop memget, :*, 10
       val *= -1 if mag < 0
       memset checked_binop mag, :+, val
+      # active IP manipulation (handled elsewhere)
+    when '[', ']', '#'
+      # alphabetic literals (and all other codepoints)
+    else
+      memset insn.ord.to_i64
     end
   end
 end
