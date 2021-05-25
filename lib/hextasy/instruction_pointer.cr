@@ -19,7 +19,7 @@ class Hextasy::InstructionPointer
   def wrap!
     if cornered?
       new = heading.value + 2
-      new -= 2 if program.memory[program.memory_pointer.edge] < 1
+      new += 2 if program.memory[program.memory_pointer.edge] < 1
       @cell = program.corners[new % 6]
       return
     end
