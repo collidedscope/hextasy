@@ -95,12 +95,18 @@ class Hextasy::Hexagony
     "#{b.chr}#{String.new buffer}"
   end
 
-  def interpret(input = STDIN, output = STDOUT)
-    clock = 0
+  def reset
+    memory.clear
+    @active_ip = 0
     @instruction_pointers = StaticArray(InstructionPointer, 6).new { |i|
       heading = Axpoint::Heading.from_value (i + 2) % 6
       InstructionPointer.new corners[i], heading, self
     }
+  end
+
+  def interpret(input = STDIN, output = STDOUT)
+    clock = 0
+    reset
 
     loop do
       case insn = @program[ip.cell]
