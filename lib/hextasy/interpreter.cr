@@ -146,10 +146,6 @@ class Hextasy::Hexagony
       when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
         # copy
       when '&' ; memset memget > 0 ? right : left
-        # active instruction pointer
-      when '[' ; @active_ip = @active_ip.pred % 6
-      when ']' ; @active_ip = @active_ip.succ % 6
-      when '#' ; @active_ip = memget.to_i % 6
         # modulus
       when '%'
         left, right = neighbors
@@ -169,8 +165,6 @@ class Hextasy::Hexagony
         mag = checked_binop memget, :*, 10
         val *= -1 if mag < 0
         memset checked_binop mag, :+, val
-      else
-        abort "'#{insn}' not yet implemented!"
       end
 
       if @debug.includes? ip.cell
@@ -179,6 +173,13 @@ class Hextasy::Hexagony
 
       clock += 1
       ip.tick!
+
+      @active_ip = case insn
+                   when '[' ; @active_ip.pred % 6
+                   when ']' ; @active_ip.succ % 6
+                   when '#' ; memget.to_i % 6
+                   else       @active_ip
+                   end
     end
   end
 end
