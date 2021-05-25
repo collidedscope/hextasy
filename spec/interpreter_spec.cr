@@ -30,4 +30,10 @@ describe Hexagony do
     hexify = Hexagony.new hexify_source
     hexify.run_on(hexify_source.delete " \n").should eq hexify_source
   end
+
+  it "interprets the tac example" do
+    tac = Hexagony.new example "tac"
+    tac.run_on("foo bar baz").should eq "zab rab oof"
+    tac.run_on("1\n2\n3").should eq "3\n2\n1"
+  end
 end
