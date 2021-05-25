@@ -24,4 +24,10 @@ describe Hexagony do
     prime.run_on("17").should eq "1"
     prime.run_on("123").should eq "0"
   end
+
+  it "runs the hexify example on itself" do
+    hexify_source = example "hexify"
+    hexify = Hexagony.new hexify_source
+    hexify.run_on(hexify_source.delete " \n").should eq hexify_source
+  end
 end
