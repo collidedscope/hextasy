@@ -2,6 +2,7 @@ require "hextasy"
 require "option_parser"
 
 grid = nil
+pretty = nil
 
 OptionParser.parse do |parser|
   parser.banner = <<-EOS
@@ -14,9 +15,10 @@ OptionParser.parse do |parser|
     grid = n.to_i
   }
 
-  parser.on("-h", "--help", "Show this help") {
-    abort parser
-  }
+  parser.on("-p", "--pretty",
+    "Pretty-print the program rather than executing it") { pretty = true }
+
+  parser.on("-h", "--help", "Show this help") { abort parser }
 
   parser.invalid_option do |flag|
     STDERR.puts "ERROR: #{flag} is not a valid option."
@@ -31,10 +33,11 @@ if n = grid
   exit
 end
 
-source = if path = ARGV[0]?
-           File.read path
-         else
-           STDIN.gets_to_end
-         end
+source = ARGF.gets_to_end
+h = Hextasy::Hexagony.new source
 
-Hextasy::Hexagony.new(source).interpret
+if pretty
+  puts h.lines
+else
+  h.interpret
+end
