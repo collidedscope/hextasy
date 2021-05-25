@@ -81,21 +81,21 @@ class Hextasy::Hexagony
     memset checked_binop left, {{op}}, right
   end
 
-  def getnum
-    while b = STDIN.read_byte
+  macro getnum
+    while b = input.read_byte
       break if b.chr.in_set? "0-9+-"
     end
     return 0 unless b
 
-    peek = STDIN.peek
+    peek = input.peek
     len = peek.take_while { |c| 48 <= c <= 57 }.size
-    STDIN.read buffer = peek[0, len]
+    input.read buffer = peek[0, len]
 
     return 0 if b < 48 && buffer.empty?
     "#{b.chr}#{String.new buffer}"
   end
 
-  def interpret(io = STDOUT)
+  def interpret(input = STDIN, output = STDOUT)
     clock = 0
     @instruction_pointers = StaticArray(InstructionPointer, 6).new { |i|
       heading = Axpoint::Heading.from_value (i + 2) % 6
@@ -119,13 +119,13 @@ class Hextasy::Hexagony
         # skip
       when '$' ; ip.tick!
         # get byte
-      when ',' ; memset (STDIN.read_byte || -1).to_i64
+      when ',' ; memset (input.read_byte || -1).to_i64
         # get integer
       when '?' ; memset getnum.to_i64
         # put byte
-      when ';' ; io.write_byte (memget & 0xFF).to_u8
+      when ';' ; output.write_byte (memget & 0xFF).to_u8
         # put integer
-      when '!' ; io << memget
+      when '!' ; output << memget
         # decrement
       when '(' ; memset memget - 1
         # increment
