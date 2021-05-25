@@ -58,11 +58,11 @@ class Hextasy::Hexagony
   end
 
   macro left
-    memory[memory_pointer.dup.tap(&.turn_left!).edge]
+    memory[memory_pointer.dup.tap(&.left!).edge]
   end
 
   macro right
-    memory[memory_pointer.dup.tap(&.turn_right!).edge]
+    memory[memory_pointer.dup.tap(&.right!).edge]
   end
 
   macro neighbors
@@ -165,11 +165,11 @@ class Hextasy::Hexagony
     when ':' ; memset left // right
       # memory pointer navigation
     when '=' ; memory_pointer.reverse!
-    when '{' ; memory_pointer.turn_left!
-    when '}' ; memory_pointer.turn_right!
-    when 39  ; memory_pointer.reverse!.turn_left!.reverse! # '\'' breaks macro parsing
-    when '"' ; memory_pointer.reverse!.turn_right!.reverse!
-    when '^' ; memget > 0 ? memory_pointer.turn_right! : memory_pointer.turn_left!
+    when '{' ; memory_pointer.left!
+    when '}' ; memory_pointer.right!
+    when 39  ; memory_pointer.reverse!.left!.reverse! # '\'' breaks macro parsing
+    when '"' ; memory_pointer.reverse!.right!.reverse!
+    when '^' ; memget > 0 ? memory_pointer.right! : memory_pointer.left!
       # copy
     when '&' ; memset memget > 0 ? right : left
       # modulus
