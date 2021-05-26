@@ -1,7 +1,7 @@
 class Hextasy::Hexagony
   def lines
-    lines = Array.new(@size * 2 - 1) {
-      Array(Char).new @size * 4 - 3, ' '
+    lines = Util.rows(@size).map { |r|
+      Array(Char).new @size * 2 - 2 + r, ' '
     }
 
     @program.each do |cell, insn|
@@ -9,6 +9,6 @@ class Hextasy::Hexagony
       lines[row][col] = insn
     end
 
-    lines.map(&.join.rstrip).join '\n'
+    lines.map(&.join).join '\n'
   end
 end
