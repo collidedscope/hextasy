@@ -88,14 +88,13 @@ class Hextasy::Hexagony
     while b = input.read_byte
       break if b.chr.in_set? "0-9+-"
     end
-    return 0 unless b
 
-    peek = input.peek
+    return 0 unless peek = b && input.peek
+
     len = peek.take_while { |c| 48 <= c <= 57 }.size
     input.read buffer = peek[0, len]
 
-    return 0 if b < 48 && buffer.empty?
-    "#{b.chr}#{String.new buffer}"
+    b < 48 && buffer.empty? ? 0 : "#{b.chr}#{String.new buffer}"
   end
 
   def reset
