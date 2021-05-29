@@ -11,4 +11,9 @@ class Hextasy::Hexagony
 
     lines.map(&.join).join '\n'
   end
+
+  def draw
+    y, x = @row_col[ip.cell]
+    print "\e[#{y+1};#{x+1}H\e[38;5;#{rand 255}m#{@program[ip.cell]}"
+  end
 end

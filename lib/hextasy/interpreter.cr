@@ -108,13 +108,14 @@ class Hextasy::Hexagony
     }
   end
 
-  def interpret(input = STDIN, output = STDOUT)
+  def interpret(input = STDIN, output = STDOUT, listener : Channel(Hexagony)? = nil)
     clock = 0
-    insn = '.'
     reset
 
     loop do
       step
+      listener && listener.send self
+      break if insn == '@'
 
       if @debug.includes? ip.cell
         STDERR.puts "\nTick #{clock}: '#{insn}'", memory

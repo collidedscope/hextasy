@@ -4,6 +4,7 @@ require "option_parser"
 input = STDIN
 grid = nil
 pretty = nil
+visual = nil
 
 OptionParser.parse do |parser|
   parser.banner = <<-EOS
@@ -23,6 +24,11 @@ OptionParser.parse do |parser|
 
   parser.on("-p", "--pretty",
     "Pretty-print the program rather than executing it") { pretty = true }
+
+  parser.on("-v IPS", "--visual IPS",
+    "Visualize program execution at IPS instructions per second (0 for manual)") { |ips|
+    visual = ips.to_i
+  }
 
   parser.on("-h", "--help", "Show this help") { abort parser }
 
@@ -44,6 +50,10 @@ h = Hextasy::Hexagony.new source
 
 if pretty
   puts h.lines
-else
+elsif !visual
   h.interpret input
+end
+
+if ips = visual
+  Hextasy.visualize h, input, ips
 end
