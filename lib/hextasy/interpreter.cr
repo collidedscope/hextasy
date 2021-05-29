@@ -3,10 +3,12 @@ require "big"
 class Hextasy::Hexagony
   alias MemoryEdge = Array(Tuple(Int32, Int32))
 
-  getter size : Int32
-  getter corners : Array(Axpoint)
-  getter memory = Hash(MemoryEdge, Int64 | BigInt).new 0i64
-  getter memory_pointer = MemoryPointer.new
+  getter \
+    insn = '.',
+    size : Int32,
+    corners : Array(Axpoint),
+    memory_pointer = MemoryPointer.new,
+    memory = Hash(MemoryEdge, Int64 | BigInt).new 0i64
   getter! instruction_pointers
 
   @active_ip = 0
@@ -131,11 +133,9 @@ class Hextasy::Hexagony
   end
 
   macro step
-    case insn = @program[ip.cell]
-      # no-op
-    when '.'
-      # halt
-    when '@' ; break
+    case @insn = @program[ip.cell]
+      # no-ops
+    when '.', '@'
       # mirrors
     when '/' ; ip.heading = ip.heading.slash
     when '\\'; ip.heading = ip.heading.backslash
