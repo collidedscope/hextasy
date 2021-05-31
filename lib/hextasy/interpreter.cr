@@ -15,6 +15,7 @@ class Hextasy::Hexagony
   @program = {} of Axpoint => Char
   @row_col = {} of Axpoint => Tuple(Int32, Int32)
   @debug = Set(Axpoint).new
+  @clock = 0
 
   def initialize(source)
     flags = source.count '`'
@@ -109,7 +110,6 @@ class Hextasy::Hexagony
   end
 
   def interpret(input = STDIN, output = STDOUT, listener : Channel(Hexagony)? = nil)
-    clock = 0
     reset
 
     loop do
@@ -118,10 +118,10 @@ class Hextasy::Hexagony
       break if insn == '@'
 
       if @debug.includes? ip.cell
-        STDERR.puts "\nTick #{clock}: '#{insn}'", memory
+        STDERR.puts "\nTick #{@clock}: '#{insn}'", memory
       end
 
-      clock += 1
+      @clock += 1
       ip.tick!
 
       @active_ip = case insn

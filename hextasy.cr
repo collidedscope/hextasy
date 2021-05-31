@@ -4,6 +4,7 @@ require "option_parser"
 input = STDIN
 grid = nil
 pretty = nil
+report = nil
 visual = nil
 
 OptionParser.parse do |parser|
@@ -24,6 +25,9 @@ OptionParser.parse do |parser|
 
   parser.on("-p", "--pretty",
     "Pretty-print the program rather than executing it") { pretty = true }
+
+  parser.on("-r", "--report",
+    "Display various statistics after execution") { report = true }
 
   parser.on("-v IPS", "--visual IPS",
     "Visualize program execution at IPS instructions per second (0 for manual)") { |ips|
@@ -52,6 +56,9 @@ if pretty
   puts h.lines
 elsif !visual
   h.interpret input
+  if report
+    puts "Total instructions: #{h.@clock}"
+  end
 end
 
 if ips = visual
