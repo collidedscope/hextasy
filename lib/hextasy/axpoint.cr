@@ -1,8 +1,6 @@
 require "hextasy/heading"
 
-struct Hextasy::Axpoint
-  getter q : Int32, r : Int32
-
+record Hextasy::Axpoint, q : Int32, r : Int32 do
   def initialize(@q, @r)
   end
 
