@@ -1,9 +1,6 @@
 require "hextasy/heading"
 
 record Hextasy::Axpoint, q : Int32, r : Int32 do
-  def initialize(@q, @r)
-  end
-
   def self.origin
     new 0, 0
   end
