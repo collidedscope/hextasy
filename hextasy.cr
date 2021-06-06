@@ -56,9 +56,7 @@ if pretty
   puts h.lines
 elsif !visual
   h.interpret input
-  if report
-    puts "Total instructions: #{h.@clock}"
-  end
+  h.report if report
 end
 
 if ips = visual

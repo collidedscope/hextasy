@@ -16,6 +16,7 @@ class Hextasy::Hexagony
   @row_col = {} of Axpoint => Tuple(Int32, Int32)
   @debug = Set(Axpoint).new
   @clock = 0
+  @histogram = Hash(Char, UInt32).new 0u64
 
   def initialize(source)
     flags = source.count '`'
@@ -115,6 +116,7 @@ class Hextasy::Hexagony
     loop do
       step
       listener && listener.send self
+      @histogram[insn] += 1
       break if insn == '@'
 
       if @debug.includes? ip.cell
@@ -197,5 +199,13 @@ class Hextasy::Hexagony
     else
       memset insn.ord.to_i64
     end
+  end
+
+  def report
+    puts "\nInstruction histogram:"
+    @histogram.to_a.sort_by(&.last).reverse.each do |insn, freq|
+      puts "\t#{insn} #{freq}"
+    end
+    puts "\tTotal: #{@histogram.values.sum}"
   end
 end
