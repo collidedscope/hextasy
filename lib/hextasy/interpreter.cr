@@ -207,5 +207,7 @@ class Hextasy::Hexagony
       puts "\t#{insn} #{freq}"
     end
     puts "\tTotal: #{@histogram.values.sum}"
+
+    puts "Memory edges used: #{memory.size}"
   end
 end
