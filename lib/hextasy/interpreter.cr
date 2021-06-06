@@ -203,7 +203,7 @@ class Hextasy::Hexagony
 
   def report
     puts "\nInstruction histogram:"
-    @histogram.to_a.sort_by(&.last).reverse.each do |insn, freq|
+    @histogram.to_a.sort_by(&.last).reverse_each do |insn, freq|
       puts "\t#{insn} #{freq}"
     end
     puts "\tTotal: #{@histogram.values.sum}"
