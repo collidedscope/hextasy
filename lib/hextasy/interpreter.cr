@@ -9,7 +9,7 @@ class Hextasy::Hexagony
     corners : Array(Axpoint),
     memory_pointer = MemoryPointer.new,
     memory = Hash(MemoryEdge, Int64 | BigInt).new 0i64
-  getter! instruction_pointers
+  getter! instruction_pointers : StaticArray(InstructionPointer, 6)
 
   @active_ip = 0
   @program = {} of Axpoint => Char
@@ -101,13 +101,17 @@ class Hextasy::Hexagony
     b < 48 && buffer.empty? ? 0 : "#{b.chr}#{String.new buffer}"
   end
 
-  def reset
-    memory.clear
-    @active_ip = 0
-    @instruction_pointers = StaticArray(InstructionPointer, 6).new { |i|
+  def initial_ips
+    StaticArray(InstructionPointer, 6).new { |i|
       heading = Axpoint::Heading.from_value (i + 2) % 6
       InstructionPointer.new corners[i], heading, self
     }
+  end
+
+  def reset
+    memory.clear
+    @active_ip = 0
+    @instruction_pointers = initial_ips
   end
 
   def interpret(input = STDIN, output = STDOUT, listener : Channel(Hexagony)? = nil)
