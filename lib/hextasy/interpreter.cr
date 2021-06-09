@@ -212,7 +212,7 @@ class Hextasy::Hexagony
     end
     puts "\tTotal: #{@histogram.values.sum}"
 
-    puts "Memory edges used: #{memory.size}"
+    puts "Memory values: #{memory.values}"
 
     init = initial_ips
     used_ips = (0..5).select { |i| init[i].cell != instruction_pointers[i].cell }
